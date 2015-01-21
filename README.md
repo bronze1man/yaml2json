@@ -24,3 +24,7 @@ Notice
 * if you do not know your mashine is 386 or amd64,you can use 386...
 * master branch may rewrite history to save space.
 * source branch save the history of source code.
+
+Reference
+====================
+https://github.com/peter-edge/yaml2json
