@@ -27,4 +27,4 @@ Notice
 
 Reference
 ====================
-https://github.com/peter-edge/yaml2json
+https://github.com/peter-edge/go-yaml2json
