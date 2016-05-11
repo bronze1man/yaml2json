@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"launchpad.net/goyaml"
 	"os"
 	"strconv"
+
+	goyaml "gopkg.in/yaml.v2"
 )
 
 func main() {
