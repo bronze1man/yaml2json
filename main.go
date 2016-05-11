@@ -29,6 +29,7 @@ func _main() error {
 	if err != nil {
 		return err
 	}
+	input = nil
 	err = transformData(&data)
 	if err != nil {
 		return err
@@ -38,7 +39,7 @@ func _main() error {
 	if err != nil {
 		return err
 	}
-	_, err = os.Stdout.Write([]byte(output))
+	_, err = os.Stdout.Write(output)
 	return err
 }
 
