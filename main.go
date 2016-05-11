@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 )
 
 func main() {
-	err := _main()
+	err := translate(os.Stdin, os.Stdout)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
@@ -19,9 +20,9 @@ func main() {
 	os.Exit(0)
 }
 
-func _main() error {
+func translate(in io.Reader, out io.Writer) error {
 	var data interface{}
-	input, err := ioutil.ReadAll(os.Stdin)
+	input, err := ioutil.ReadAll(in)
 	if err != nil {
 		return err
 	}
@@ -39,7 +40,7 @@ func _main() error {
 	if err != nil {
 		return err
 	}
-	_, err = os.Stdout.Write(output)
+	_, err = out.Write(output)
 	return err
 }
 
