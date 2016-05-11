@@ -21,11 +21,11 @@ func main() {
 }
 
 func translate(in io.Reader, out io.Writer) error {
-	var data interface{}
 	input, err := ioutil.ReadAll(in)
 	if err != nil {
 		return err
 	}
+	var data interface{}
 	err = goyaml.Unmarshal(input, &data)
 	if err != nil {
 		return err
@@ -40,6 +40,7 @@ func translate(in io.Reader, out io.Writer) error {
 	if err != nil {
 		return err
 	}
+	data = nil
 	_, err = out.Write(output)
 	return err
 }
