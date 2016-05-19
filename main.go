@@ -2,33 +2,36 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
-	"launchpad.net/goyaml"
 	"os"
 	"strconv"
+
+	goyaml "gopkg.in/yaml.v2"
 )
 
 func main() {
-	err := _main()
+	err := translate(os.Stdin, os.Stdout)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}
 	os.Exit(0)
 }
-func _main() error {
-	var data interface{}
-	input, err := ioutil.ReadAll(os.Stdin)
+
+func translate(in io.Reader, out io.Writer) error {
+	input, err := ioutil.ReadAll(in)
 	if err != nil {
 		return err
 	}
+	var data interface{}
 	err = goyaml.Unmarshal(input, &data)
 	if err != nil {
 		return err
 	}
-	data, err = transformData(data)
+	input = nil
+	err = transformData(&data)
 	if err != nil {
 		return err
 	}
@@ -37,44 +40,37 @@ func _main() error {
 	if err != nil {
 		return err
 	}
-	_, err = os.Stdout.Write([]byte(output))
+	data = nil
+	_, err = out.Write(output)
 	return err
 }
-func transformData(in interface{}) (out interface{}, err error) {
-	switch in.(type) {
+
+func transformData(pIn *interface{}) (err error) {
+	switch in := (*pIn).(type) {
 	case map[interface{}]interface{}:
-		o := make(map[string]interface{})
-		for k, v := range in.(map[interface{}]interface{}) {
-			sk := ""
+		m := make(map[string]interface{}, len(in))
+		for k, v := range in {
+			if err = transformData(&v); err != nil {
+				return err
+			}
+			var sk string
 			switch k.(type) {
 			case string:
 				sk = k.(string)
 			case int:
 				sk = strconv.Itoa(k.(int))
 			default:
-				return nil, errors.New(
-					fmt.Sprintf("type not match: expect map key string or int get: %T", k))
+				return fmt.Errorf("type mismatch: expect map key string or int; got: %T", k)
 			}
-			v, err = transformData(v)
-			if err != nil {
-				return nil, err
-			}
-			o[sk] = v
+			m[sk] = v
 		}
-		return o, nil
+		*pIn = m
 	case []interface{}:
-		in1 := in.([]interface{})
-		len1 := len(in1)
-		o := make([]interface{}, len1)
-		for i := 0; i < len1; i++ {
-			o[i], err = transformData(in1[i])
-			if err != nil {
-				return nil, err
+		for i := len(in) - 1; i >= 0; i-- {
+			if err = transformData(&in[i]); err != nil {
+				return err
 			}
 		}
-		return o, nil
-	default:
-		return in, nil
 	}
-	return in, nil
+	return nil
 }
