@@ -2,29 +2,29 @@ Description
 ===================
 yaml2json 
 
-Feature
+Features
 ====================
 * zero config.
-* zero install.
-* support windows,linux,Mac os,freebsd,netbsd,openbsd,plan9 platform
+* supports Windows, Linux, macOS, FreeBSD, NetBSD, OpenBSD, Plan 9 etc..
+
+Installation
+====================
+```
+go get -v github.com/bronze1man/yaml2json
+```
 
 Usage
 ====================
-### shell
-* find the build of you platform
-* run `echo "a: 1" | yaml2json` to see result
 
-### read from file save to file
-```
-cat 1.yml | yaml2json > 2.json
-```
+* `echo "a: 1" | yaml2json`
+* `yaml2json < 1.yml > 2.json`
 
 Notice
 =====================
-* if you do not know your mashine is 386 or amd64,you can use 386...
-* master branch may rewrite history to save space.
-* source branch save the history of source code.
+* if you don't know whether your platform is 386 or amd64, use the 386 build...
+* the master branch may rewrite history to save space.
+* the source branch contains the full history of the source code.
 
 Reference
 ====================
-https://github.com/peter-edge/go-yaml2json
+* https://github.com/peter-edge/go-yaml2json
