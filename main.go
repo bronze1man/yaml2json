@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"strconv"
 
@@ -13,6 +12,9 @@ import (
 
 func main() {
 	err := translate(os.Stdin, os.Stdout)
+	if err == io.EOF {
+		os.Exit(0)
+	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
@@ -21,28 +23,35 @@ func main() {
 }
 
 func translate(in io.Reader, out io.Writer) error {
-	input, err := ioutil.ReadAll(in)
-	if err != nil {
-		return err
-	}
-	var data interface{}
-	err = goyaml.Unmarshal(input, &data)
-	if err != nil {
-		return err
-	}
-	input = nil
-	err = transformData(&data)
-	if err != nil {
-		return err
-	}
+	decoder := goyaml.NewDecoder(in)
 
-	output, err := json.Marshal(data)
-	if err != nil {
-		return err
+	for {
+		var data interface{}
+		err := decoder.Decode(&data)
+		if err != nil {
+			return err
+		}
+		err = transformData(&data)
+		if err != nil {
+			return err
+		}
+
+		output, err := json.Marshal(data)
+		if err != nil {
+			return err
+		}
+
+		data = nil
+		_, err = out.Write(output)
+		if err != nil {
+			return err
+		}
+
+		_, err = io.WriteString(out, "\n")
+		if err != nil {
+			return err
+		}
 	}
-	data = nil
-	_, err = out.Write(output)
-	return err
 }
 
 func transformData(pIn *interface{}) (err error) {
