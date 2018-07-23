@@ -4,9 +4,9 @@ services:
   - docker
 
 script:
-  - cd "$GOPATH/src/github.com/bronze1man/yaml2json"
   - rm -rf ./builds
   - docker build -t yaml2json-binaries --target binaries .
   - docker create --name yaml2json-binaries yaml2json-binaries noop-command-fail-when-run
   - docker cp yaml2json-binaries:/builds ./
   - docker rm yaml2json-binaries
+  - ls -al ./builds
