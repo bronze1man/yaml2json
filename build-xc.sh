@@ -1,6 +1,6 @@
 #!/bin/sh
 
-APPLICATION_NAME="yaml2json"
+APP_NAME=${APP_NAME:-app}
 
 SUPPORTED_PLATFORMS=$(cat <<'EOF'
 darwin/386
@@ -27,14 +27,12 @@ mkdir -p ./builds
 for platform in $SUPPORTED_PLATFORMS; do
     export GOOS=`echo $platform | cut -d '/' -f 1`
     export GOARCH=`echo $platform | cut -d '/' -f 2`
-    output_folder="./builds/${GOOS}_${GOARCH}"
+    output="./builds/${APP_NAME}-${GOOS}-${GOARCH}"
 
     # deal with windows filename
     bin_ext=""
     test "$GOOS" = "windows" && bin_ext=".exe"
     
-    mkdir -p "$output_folder"
-
     echo "Building for $GOOS/$GOARCH"
-    go build -o "$output_folder/${APPLICATION_NAME}${bin_ext}"
+    go build -ldflags "-X \"main.VersionInfo=${APP_VERSION} $(date "+(%b %Y)")\"" -o "${output}${bin_ext}"
 done
