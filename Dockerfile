@@ -21,8 +21,6 @@ COPY ["./main.go", "./"]
 
 RUN ./build-xc.sh
 
-RUN ls -al /go/src/app/builds
-
 FROM scratch AS binaries
 
 COPY --from=build-xc /go/src/app/builds /builds
