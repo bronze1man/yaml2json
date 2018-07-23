@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -10,7 +11,17 @@ import (
 	goyaml "gopkg.in/yaml.v2"
 )
 
+// VersionInfo a string describing the version of the package
+var VersionInfo string
+
 func main() {
+	// print out version information if asked
+	versionFlag := flag.Bool("version", false, fmt.Sprintf("prints current %s version", os.Args[1:]))
+	flag.Parse()
+	if *versionFlag {
+		fmt.Println(VersionInfo)
+		os.Exit(0)
+	}
 	err := translate(os.Stdin, os.Stdout)
 	if err == io.EOF {
 		os.Exit(0)

@@ -5,7 +5,7 @@ services:
 
 script:
   - rm -rf ./builds
-  - docker build -t yaml2json-binaries --target binaries .
+  - docker build -t yaml2json-binaries --build-arg APP_VERSION="${TRAVIS_TAG:-SNAPSHOT}" --target binaries .
   - docker create --name yaml2json-binaries yaml2json-binaries noop-command-fail-when-run
   - docker cp yaml2json-binaries:/builds ./
   - docker rm yaml2json-binaries
