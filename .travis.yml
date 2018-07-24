@@ -1,0 +1,22 @@
+sudo: required
+
+services:
+  - docker
+
+script:
+  - rm -rf ./builds
+  - docker build -t yaml2json-binaries --build-arg APP_VERSION="${TRAVIS_TAG:-SNAPSHOT}" --target binaries .
+  - docker create --name yaml2json-binaries yaml2json-binaries noop-command-fail-when-run
+  - docker cp yaml2json-binaries:/builds ./
+  - docker rm yaml2json-binaries
+
+# deploy:
+#   provider: releases
+#   # Needs to be set up by repo owner, see docs
+#   # https://docs.travis-ci.com/user/deployment/releases/#Authenticating-with-an-OAuth-token
+#   api_key: "GITHUB OAUTH TOKEN"
+#   file_glob: true
+#   file: "./builds/*"
+#   on:
+#     tags: true
+#     condition: $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+
