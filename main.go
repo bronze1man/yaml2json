@@ -1,96 +1,26 @@
 package main
 
 import (
-	"encoding/json"
-	"flag"
-	"fmt"
-	"io"
 	"os"
-	"strconv"
 
-	goyaml "gopkg.in/yaml.v2"
+	"github.com/bronze1man/yaml2json/y2jLib"
 )
 
-// VersionInfo a string describing the version of the package
-var VersionInfo string
-
 func main() {
-	// print out version information if asked
-	versionFlag := flag.Bool("version", false, fmt.Sprintf("prints current %s version", os.Args[1:]))
-	flag.Parse()
-	if *versionFlag {
-		fmt.Println(VersionInfo)
+	if len(os.Args)>1 && os.Args[1]=="--help"{
+		os.Stdout.WriteString(`Transform yaml string to json string without the type infomation.
+Usage:
+echo "a: 1" | yaml2json
+yaml2json < 1.yml > 2.json`)
+		os.Exit(1)
+		return
+	}
+	err := y2jLib.TranslateStream(os.Stdin, os.Stdout)
+	if err == nil{
 		os.Exit(0)
 	}
-	err := translate(os.Stdin, os.Stdout)
-	if err == io.EOF {
-		os.Exit(0)
-	}
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
-	}
-	os.Exit(0)
+	os.Stderr.WriteString(err.Error())
+	os.Stderr.WriteString("\n")
+	os.Exit(2)
 }
 
-func translate(in io.Reader, out io.Writer) error {
-	decoder := goyaml.NewDecoder(in)
-
-	for {
-		var data interface{}
-		err := decoder.Decode(&data)
-		if err != nil {
-			return err
-		}
-		err = transformData(&data)
-		if err != nil {
-			return err
-		}
-
-		output, err := json.Marshal(data)
-		if err != nil {
-			return err
-		}
-
-		data = nil
-		_, err = out.Write(output)
-		if err != nil {
-			return err
-		}
-
-		_, err = io.WriteString(out, "\n")
-		if err != nil {
-			return err
-		}
-	}
-}
-
-func transformData(pIn *interface{}) (err error) {
-	switch in := (*pIn).(type) {
-	case map[interface{}]interface{}:
-		m := make(map[string]interface{}, len(in))
-		for k, v := range in {
-			if err = transformData(&v); err != nil {
-				return err
-			}
-			var sk string
-			switch k.(type) {
-			case string:
-				sk = k.(string)
-			case int:
-				sk = strconv.Itoa(k.(int))
-			default:
-				return fmt.Errorf("type mismatch: expect map key string or int; got: %T", k)
-			}
-			m[sk] = v
-		}
-		*pIn = m
-	case []interface{}:
-		for i := len(in) - 1; i >= 0; i-- {
-			if err = transformData(&in[i]); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
