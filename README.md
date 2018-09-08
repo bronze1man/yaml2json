@@ -12,7 +12,7 @@ Binary installation and usage
 * Download a binary that match your operation system and platform.
 * https://github.com/bronze1man/yaml2json/releases
 * copy it to `/usr/local/bin` like (`cp ~/Downloads/yaml2json_darwin_amd64 /usr/local/bin/yaml2json` )
-* Use `chmod +x 777 /usr/local/bin/yaml2json` give running permission to it.
+* Use `chmod +x /usr/local/bin/yaml2json` give running permission to it.
 
 ### Usage
 * `echo "a: 1" | yaml2json`

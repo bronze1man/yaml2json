@@ -6,7 +6,7 @@ import (
 	"github.com/bronze1man/yaml2json/y2jLib"
 )
 
-func main() {
+	func main() {
 	if len(os.Args)>1 && os.Args[1]=="--help"{
 		os.Stdout.WriteString(`Transform yaml string to json string without the type infomation.
 Usage:
