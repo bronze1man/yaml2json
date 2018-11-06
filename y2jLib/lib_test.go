@@ -27,11 +27,25 @@ func TestTranslate(ot *testing.T){
 		{`a: 1
 b: 2`,`{"a":1,"b":2}
 `},
+		{`n: bar`,`{"n":"bar"}
+`},
+		{`+56: bar`,`{"56":"bar"}
+`},
+		{`m: false`,`{"m":false}
+`},
+		{`m: true`,`{"m":true}
+`},
+		{`false: false`,`{"false":false}
+`},
+		{`null: null`,`{"null":null}
+`},
+		{`5.6: 5.6`,`{"5.6":5.6}
+`},
 }
 	for _,cas:=range casList{
 		out:=mustTranslateStreamString(cas.in)
 		if out!=cas.out{
-			panic("fail ["+cas.in+"] ["+string(out)+"] ["+cas.out+"]")
+			panic("fail in:["+cas.in+"] thisOut:["+string(out)+"] expect:["+cas.out+"]")
 		}
 	}
 }

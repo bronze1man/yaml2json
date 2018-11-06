@@ -2,7 +2,6 @@ package yaml
 
 import (
 	"encoding/base64"
-	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -24,7 +23,10 @@ func init() {
 	for _, c := range "0123456789" {
 		t[int(c)] = 'D' // Digit
 	}
-	for _, c := range "yYnNtTfFoO~" {
+	//for _, c := range "yYnNtTfFoO~" {
+	//	t[int(c)] = 'M' // In map
+	//}
+	for _, c := range "tfn" {
 		t[int(c)] = 'M' // In map
 	}
 	t[int('.')] = '.' // Float (potentially in map)
@@ -34,20 +36,23 @@ func init() {
 		tag string
 		l   []string
 	}{
-		{true, yaml_BOOL_TAG, []string{"y", "Y", "yes", "Yes", "YES"}},
-		{true, yaml_BOOL_TAG, []string{"true", "True", "TRUE"}},
-		{true, yaml_BOOL_TAG, []string{"on", "On", "ON"}},
-		{false, yaml_BOOL_TAG, []string{"n", "N", "no", "No", "NO"}},
-		{false, yaml_BOOL_TAG, []string{"false", "False", "FALSE"}},
-		{false, yaml_BOOL_TAG, []string{"off", "Off", "OFF"}},
-		{nil, yaml_NULL_TAG, []string{"", "~", "null", "Null", "NULL"}},
-		{math.NaN(), yaml_FLOAT_TAG, []string{".nan", ".NaN", ".NAN"}},
-		{math.Inf(+1), yaml_FLOAT_TAG, []string{".inf", ".Inf", ".INF"}},
-		{math.Inf(+1), yaml_FLOAT_TAG, []string{"+.inf", "+.Inf", "+.INF"}},
-		{math.Inf(-1), yaml_FLOAT_TAG, []string{"-.inf", "-.Inf", "-.INF"}},
-		{"<<", yaml_MERGE_TAG, []string{"<<"}},
+		//{true, yaml_BOOL_TAG, []string{"y", "Y", "yes", "Yes", "YES"}},
+		//{true, yaml_BOOL_TAG, []string{"true", "True", "TRUE"}},
+		//{true, yaml_BOOL_TAG, []string{"on", "On", "ON"}},
+		//{false, yaml_BOOL_TAG, []string{"n", "N", "no", "No", "NO"}},
+		//{false, yaml_BOOL_TAG, []string{"false", "False", "FALSE"}},
+		//{false, yaml_BOOL_TAG, []string{"off", "Off", "OFF"}},
+		//{nil, yaml_NULL_TAG, []string{"", "~", "null", "Null", "NULL"}},
+		//{math.NaN(), yaml_FLOAT_TAG, []string{".nan", ".NaN", ".NAN"}},
+		//{math.Inf(+1), yaml_FLOAT_TAG, []string{".inf", ".Inf", ".INF"}},
+		//{math.Inf(+1), yaml_FLOAT_TAG, []string{"+.inf", "+.Inf", "+.INF"}},
+		//{math.Inf(-1), yaml_FLOAT_TAG, []string{"-.inf", "-.Inf", "-.INF"}},
+		//{"<<", yaml_MERGE_TAG, []string{"<<"}},
+		{true, yaml_BOOL_TAG, []string{"true"}},
+		{false, yaml_BOOL_TAG, []string{"false"}},
+		{nil, yaml_NULL_TAG, []string{"null"}},
 	}
-
+	//
 	m := resolveMap
 	for _, item := range resolveMapList {
 		for _, s := range item.l {

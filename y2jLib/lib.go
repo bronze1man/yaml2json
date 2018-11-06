@@ -54,6 +54,12 @@ func transformData(pIn *interface{}) (err error) {
 				sk = k.(string)
 			case int:
 				sk = strconv.Itoa(k.(int))
+			case bool:
+				sk = strconv.FormatBool(k.(bool))
+			case nil:
+				sk = "null"
+			case float64:
+				sk = strconv.FormatFloat(k.(float64),'f',-1,64)
 			default:
 				return fmt.Errorf("type mismatch: expect map key string or int; got: %T", k)
 			}
