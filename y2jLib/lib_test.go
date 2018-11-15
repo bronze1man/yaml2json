@@ -15,6 +15,32 @@ func mustTranslateStreamString(inSlice string) (outSlice string){
 	return outBuf.String()
 }
 
+func mustTranslateStringWithOptions(inSlice string, options Options) (outSlice string){
+	inBuf:=bytes.NewBufferString(inSlice)
+	outBuf:=&bytes.Buffer{}
+	err:= TranslateStreamWithOptions(inBuf,outBuf,options)
+	if err!=nil{
+		panic(err)
+	}
+	return outBuf.String()
+}
+
+func tryTranslateStringWithOptions(inSlice string, options Options) (outSlice string, err error){
+	inBuf:=bytes.NewBufferString(inSlice)
+	outBuf:=&bytes.Buffer{}
+	err = TranslateStreamWithOptions(inBuf,outBuf,options)
+    if err == nil {
+        outSlice = outBuf.String()
+    }
+    return
+}
+
+func mustMatchOutput(input, output, expectedOutput string) {
+    if output != expectedOutput {
+        panic("Failure.\n-- Input:\n"+input+"\n-- Output:\n"+output+"\n-- Expected Output:\n"+expectedOutput+"\n")
+    }
+}
+
 func TestTranslate(ot *testing.T){
 	type tCas struct{
 		in string
@@ -44,8 +70,46 @@ b: 2`,`{"a":1,"b":2}
 }
 	for _,cas:=range casList{
 		out:=mustTranslateStreamString(cas.in)
-		if out!=cas.out{
-			panic("fail in:["+cas.in+"] thisOut:["+string(out)+"] expect:["+cas.out+"]")
-		}
+        mustMatchOutput(cas.in, out, cas.out)
 	}
+}
+
+func TestStrictParse(ot *testing.T) {
+    good_in := " one: 1\n two: 2"
+    bad_in := " one: 1\n one: 2"
+
+    options := Options{}
+
+    // Verify that both inputs parse without strict parsing
+    mustTranslateStringWithOptions(good_in, options)
+    mustTranslateStringWithOptions(bad_in, options)
+
+    options.ParseStrict = true
+
+    // Under strict parsing, good input should succeed.
+    mustTranslateStringWithOptions(good_in, options)
+
+    // Under strict parsing, bad input should fail.
+    _, err := tryTranslateStringWithOptions(bad_in, options)
+    if err == nil {
+        panic("Strict parsing should have failed but it didn't.")
+    }
+}
+
+func TestPrettyPrint(ot *testing.T) {
+    input :=
+`one: 1
+two: 2`
+
+    expected_output :=
+`{
+  "one": 1,
+  "two": 2
+}
+`
+    options := Options { Indent: "  " }
+
+    output := mustTranslateStringWithOptions(input, options)
+
+    mustMatchOutput(input, output, expected_output)
 }

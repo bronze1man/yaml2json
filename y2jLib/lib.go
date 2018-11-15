@@ -9,8 +9,19 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+type Options struct {
+	ParseStrict bool
+	Indent string
+}
+
 func TranslateStream(in io.Reader, out io.Writer) error {
+	return TranslateStreamWithOptions(in, out, Options{})
+}
+
+func TranslateStreamWithOptions(in io.Reader, out io.Writer, options Options) error {
 	decoder := yaml.NewDecoder(in)
+	decoder.SetStrict(options.ParseStrict)
+
 	for {
 		var data interface{}
 		err := decoder.Decode(&data)
@@ -24,7 +35,7 @@ func TranslateStream(in io.Reader, out io.Writer) error {
 		if err != nil {
 			return err
 		}
-		output, err := json.Marshal(data)
+		output, err := marshalToJson(data, options.Indent)
 		if err != nil {
 			return err
 		}
@@ -37,6 +48,14 @@ func TranslateStream(in io.Reader, out io.Writer) error {
 		if err != nil {
 			return err
 		}
+	}
+}
+
+func marshalToJson(v interface{}, indent string) ([]byte, error) {
+	if len(indent) > 0 {
+		return json.MarshalIndent(v, "", indent)
+	} else {
+		return json.Marshal(v)
 	}
 }
 
