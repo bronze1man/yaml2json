@@ -14,9 +14,31 @@ Binary installation and usage
 * copy it to `/usr/local/bin` like (`cp ~/Downloads/yaml2json_darwin_amd64 /usr/local/bin/yaml2json` )
 * Use `chmod +x /usr/local/bin/yaml2json` give running permission to it.
 
-### Usage
+### mac/linux usage
 * `echo "a: 1" | yaml2json`
 * `yaml2json < 1.yml > 2.json`
+
+### window usage
+* windows 7 cmd.exe:
+```
+C:\tmp>more .\1.yaml
+a: 1
+
+C:\tmp>.\yaml2json_windows_amd64.exe < ./1.yaml > 2.json
+
+C:\tmp>more .\2.json
+{"a":1}
+```
+
+* windows 7 powerShell 6.1.7600 file example:
+```
+PS C:\tmp> more .\1.yaml
+a: 1
+
+PS C:\tmp> Get-Content .\1.yaml | .\yaml2json_windows_amd64.exe > .\2.json
+PS C:\tmp> more .\2.json
+{"a":1}
+```
 
 Library installation
 ====================
