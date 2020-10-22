@@ -38,6 +38,7 @@ func main(){
 		{"openbsd","386"},
 		{"openbsd","amd64"},
 		{"plan9","386"},
+		{"linux","ppc64le"},
 	}
 	for _,info:=range buildInfoList{
 		mustRunCmd([]string{"go","install","-ldflags","-s -w","-gcflags=-trimpath="+gopath,"github.com/bronze1man/yaml2json"},map[string]string{
