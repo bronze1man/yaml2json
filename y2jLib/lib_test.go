@@ -46,9 +46,14 @@ key2: .nan
 key3: ~
 ---
 key4: Second
-key5: Document`,`{"key1":".inf","key2":".nan","key3":"~"}
+key5: Document`,`{"key1":"+Inf","key2":"NaN","key3":null}
 {"key4":"Second","key5":"Document"}
 `},
+{
+`x:
+y:`,`{"x":null,"y":null}
+`,
+}, // https://github.com/bronze1man/yaml2json/issues/15
 }
 	for _,cas:=range casList{
 		out:=mustTranslateStreamString(cas.in)

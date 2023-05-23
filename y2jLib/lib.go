@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"encoding/json"
 
-	yaml "gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v3"
+	"math"
 )
 
 func TranslateStream(in io.Reader, out io.Writer) error {
@@ -42,10 +43,22 @@ func TranslateStream(in io.Reader, out io.Writer) error {
 
 func transformData(pIn *interface{}) (err error) {
 	switch in := (*pIn).(type) {
+	case float64:
+		if math.IsInf(in,1){
+			*pIn = "+Inf"
+		}else if math.IsInf(in,-1){
+			*pIn = "-Inf"
+		}else if math.IsNaN(in){
+			*pIn = "NaN"
+		}else{
+			// nothing to do.
+		}
+		return nil
 	case map[interface{}]interface{}:
 		m := make(map[string]interface{}, len(in))
 		for k, v := range in {
-			if err = transformData(&v); err != nil {
+			err = transformData(&v)
+			if err != nil {
 				return err
 			}
 			var sk string
@@ -59,16 +72,36 @@ func transformData(pIn *interface{}) (err error) {
 			case nil:
 				sk = "null"
 			case float64:
-				sk = strconv.FormatFloat(k.(float64),'f',-1,64)
+				f:=k.(float64)
+				if math.IsInf(f,1){
+					sk = "+Inf"
+				}else if math.IsInf(f,-1){
+					sk = "-Inf"
+				}else if math.IsNaN(f){
+					sk = "NaN"
+				}else{
+					sk = strconv.FormatFloat(k.(float64),'f',-1,64)
+				}
 			default:
 				return fmt.Errorf("type mismatch: expect map key string or int; got: %T", k)
 			}
 			m[sk] = v
 		}
 		*pIn = m
+	case map[string]interface{}:
+		m := make(map[string]interface{}, len(in))
+		for k, v := range in {
+			err = transformData(&v)
+			if err != nil {
+				return err
+			}
+			m[k] = v
+		}
+		*pIn = m
 	case []interface{}:
 		for i := len(in) - 1; i >= 0; i-- {
-			if err = transformData(&in[i]); err != nil {
+			err = transformData(&in[i])
+			if err != nil {
 				return err
 			}
 		}
