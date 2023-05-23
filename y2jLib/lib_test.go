@@ -41,6 +41,14 @@ b: 2`,`{"a":1,"b":2}
 `},
 		{`5.6: 5.6`,`{"5.6":5.6}
 `},
+{`key1: .inf
+key2: .nan
+key3: ~
+---
+key4: Second
+key5: Document`,`{"key1":".inf","key2":".nan","key3":"~"}
+{"key4":"Second","key5":"Document"}
+`},
 }
 	for _,cas:=range casList{
 		out:=mustTranslateStreamString(cas.in)
