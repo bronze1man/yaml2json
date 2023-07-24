@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strings"
 	"path/filepath"
-	"runtime"
 	"io/ioutil"
 	"archive/zip"
 	"bytes"
@@ -21,39 +20,41 @@ func main(){
 		goos string
 		goarch string
 	}
-	buildInfoList := []buildInfo{
-		{"darwin","386"},
-		{"darwin","amd64"},
-		{"linux","386"},
-		{"linux","amd64"},
-		{"linux","arm"},
-		{"windows","386"},
-		{"windows","amd64"},
-		{"freebsd","386"},
-		{"freebsd","amd64"},
-		{"freebsd","arm"},
-		{"netbsd","386"},
-		{"netbsd","amd64"},
-		{"netbsd","arm"},
-		{"openbsd","386"},
-		{"openbsd","amd64"},
-		{"plan9","386"},
-		{"linux","ppc64le"},
-	}
-	for _,info:=range buildInfoList{
-		mustRunCmd([]string{"go","install","-ldflags","-s -w","-gcflags=-trimpath="+gopath,"github.com/bronze1man/yaml2json"},map[string]string{
-			"GOOS":info.goos,
-			"GOARCH":info.goarch,
-		})
-		var outputPath string
-		if info.goarch == runtime.GOARCH && info.goos == runtime.GOOS{
-			outputPath = filepath.Join(gopath,"bin","yaml2json")
-		}else{
-			outputPath = filepath.Join(gopath,"bin",info.goos+"_"+info.goarch,"yaml2json")
+	buildInfoList := []buildInfo{}
+	for _,line:= range strings.Split(osAndArchList,"\n"){
+		line = strings.TrimSpace(line)
+		if line==``{
+			continue
 		}
+		part:=strings.Split(line,"/")
+		buildInfoList = append(buildInfoList,buildInfo{goos: part[0],goarch: part[1]})
+	}
+	//buildInfoList := []buildInfo{
+	//	{"darwin","amd64"},
+	//	{"linux","386"},
+	//	{"linux","amd64"},
+	//	{"linux","arm"},
+	//	{"windows","386"},
+	//	{"windows","amd64"},
+	//	{"freebsd","386"},
+	//	{"freebsd","amd64"},
+	//	{"freebsd","arm"},
+	//	{"netbsd","386"},
+	//	{"netbsd","amd64"},
+	//	{"netbsd","arm"},
+	//	{"openbsd","386"},
+	//	{"openbsd","amd64"},
+	//	{"plan9","386"},
+	//	{"linux","ppc64le"},
+	//}
+	for _,info:=range buildInfoList{
+		outputPath := filepath.Join(gopath,"bin",info.goos+"_"+info.goarch,"yaml2json")
 		if info.goos=="windows"{
 			outputPath+=".exe"
 		}
+		mustRunCmd([]string{"go","build","-o",outputPath,"-ldflags","-s -w","-gcflags=-trimpath","github.com/bronze1man/yaml2json"},map[string]string{
+			"GOOS":info.goos,
+		})
 		filePath:="yaml2json_"+info.goos+"_"+info.goarch
 		if info.goos=="windows"{
 			filePath+=".exe"
@@ -68,6 +69,43 @@ func main(){
 	mustZipDir(filepath.Join(gopath,"tmp","fileZip"),filepath.Join(gopath,"tmp","file","yaml2json_all.zip"))
 }
 
+const osAndArchList = `darwin/amd64
+darwin/arm64
+dragonfly/amd64
+freebsd/386
+freebsd/amd64
+freebsd/arm
+freebsd/arm64
+illumos/amd64
+linux/386
+linux/amd64
+linux/arm
+linux/arm64
+linux/mips
+linux/mips64
+linux/mips64l
+linux/mipsle
+linux/ppc64
+linux/ppc64le
+linux/riscv64
+linux/s390x
+netbsd/386
+netbsd/amd64
+netbsd/arm
+netbsd/arm64
+openbsd/386
+openbsd/amd64
+openbsd/arm
+openbsd/arm64
+openbsd/mips6
+plan9/386
+plan9/amd64
+plan9/arm
+solaris/amd64
+windows/386
+windows/amd64
+windows/arm
+windows/arm64`
 func mustCopyFile(fromPath string,toPath string){
 	content,err:=ioutil.ReadFile(fromPath)
 	if err!=nil{

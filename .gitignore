@@ -3,3 +3,4 @@ yaml2json
 # goland files
 .idea/
 /bin
+/tmp

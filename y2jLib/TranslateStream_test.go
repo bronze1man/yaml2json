@@ -54,6 +54,26 @@ key5: Document`,`{"key1":"+Inf","key2":"NaN","key3":null}
 y:`,`{"x":null,"y":null}
 `,
 }, // https://github.com/bronze1man/yaml2json/issues/15
+{
+			`first:
+  file: without --- at top
+---
+second:
+  file: which is actually the last one
+  next: there's nothing after the last delimiter
+---`,
+`{"first":{"file":"without --- at top"}}
+{"second":{"file":"which is actually the last one","next":"there's nothing after the last delimiter"}}
+null
+`,
+},
+{
+			`properties:
+  property1: FOO
+  property2:`,
+	`{"properties":{"property1":"FOO","property2":null}}
+`,
+}, // https://github.com/bronze1man/yaml2json/issues/23
 }
 	for _,cas:=range casList{
 		out:=mustTranslateStreamString(cas.in)
@@ -61,4 +81,16 @@ y:`,`{"x":null,"y":null}
 			panic("fail in:["+cas.in+"] thisOut:["+string(out)+"] expect:["+cas.out+"]")
 		}
 	}
+}
+
+func FuzzTranslateStreamNoPanic(f *testing.F) {
+	testcases := []string{`5.6: 5.6`,`m: false`}
+	for _, tc := range testcases {
+		f.Add(tc)  // Use f.Add to provide a seed corpus
+	}
+	f.Fuzz(func(t *testing.T, orig string) {
+		inBuf:=bytes.NewBufferString(orig)
+		outBuf:=&bytes.Buffer{}
+		_ = TranslateStream(inBuf,outBuf)
+	})
 }
