@@ -54,10 +54,10 @@ Development
 
 ```
 cd ~/work/yaml2json
-GOPATH=`pwd` go get -v github.com/bronze1man/yaml2json
-GOPATH=`pwd` go run github.com/bronze1man/yaml2json/y2jBuilder
+go get -v github.com/bronze1man/yaml2json
+go run github.com/bronze1man/yaml2json/y2jBuilder
 ```
-* use the file at $GOPATH/tmp/file to distribute your binary to others.
+* use the file at ~/work/yaml2json/tmp/file to distribute your binary to others.
 
 
 
