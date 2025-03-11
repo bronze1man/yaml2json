@@ -4,3 +4,5 @@ yaml2json
 .idea/
 /bin
 /tmp
+
+.DS_Store

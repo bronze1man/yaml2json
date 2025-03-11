@@ -5,7 +5,7 @@ import (
 	"github.com/bronze1man/yaml2json/y2jLib"
 )
 
-const Version = "1.3.2"
+const Version = "1.3.5"
 const helpInfo = `Transform yaml string to json string without the type infomation.
 Usage:
 echo "a: 1" | yaml2json
