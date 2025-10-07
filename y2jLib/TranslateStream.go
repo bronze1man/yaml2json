@@ -1,13 +1,13 @@
 package y2jLib
 
 import (
-	"io"
-	"strconv"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"io"
+	"math"
+	"strconv"
 
 	yaml "gopkg.in/yaml.v3"
-	"math"
 )
 
 func TranslateStream(in io.Reader, out io.Writer) error {
@@ -16,7 +16,7 @@ func TranslateStream(in io.Reader, out io.Writer) error {
 		var data interface{}
 		err := decoder.Decode(&data)
 		if err != nil {
-			if err==io.EOF{
+			if err == io.EOF {
 				return nil
 			}
 			return err
@@ -44,13 +44,13 @@ func TranslateStream(in io.Reader, out io.Writer) error {
 func transformData(pIn *interface{}) (err error) {
 	switch in := (*pIn).(type) {
 	case float64:
-		if math.IsInf(in,1){
+		if math.IsInf(in, 1) {
 			*pIn = "+Inf"
-		}else if math.IsInf(in,-1){
+		} else if math.IsInf(in, -1) {
 			*pIn = "-Inf"
-		}else if math.IsNaN(in){
+		} else if math.IsNaN(in) {
 			*pIn = "NaN"
-		}else{
+		} else {
 			// nothing to do.
 		}
 		return nil
@@ -72,15 +72,15 @@ func transformData(pIn *interface{}) (err error) {
 			case nil:
 				sk = "null"
 			case float64:
-				f:=k.(float64)
-				if math.IsInf(f,1){
+				f := k.(float64)
+				if math.IsInf(f, 1) {
 					sk = "+Inf"
-				}else if math.IsInf(f,-1){
+				} else if math.IsInf(f, -1) {
 					sk = "-Inf"
-				}else if math.IsNaN(f){
+				} else if math.IsNaN(f) {
 					sk = "NaN"
-				}else{
-					sk = strconv.FormatFloat(k.(float64),'f',-1,64)
+				} else {
+					sk = strconv.FormatFloat(k.(float64), 'f', -1, 64)
 				}
 			default:
 				return fmt.Errorf("type mismatch: expect map key string or int; got: %T", k)
