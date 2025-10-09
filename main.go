@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+
 	"github.com/bronze1man/yaml2json/y2jLib"
 )
 
@@ -11,15 +12,16 @@ Usage:
 echo "a: 1" | yaml2json
 yaml2json < 1.yml > 2.json
 `
+
 func main() {
-	if len(os.Args)>=2{
+	if len(os.Args) >= 2 {
 		switch os.Args[1] {
 		case "--help":
 			os.Stdout.WriteString(helpInfo)
 			os.Exit(1)
 			return
 		case "--version":
-			os.Stdout.WriteString(Version+"\n")
+			os.Stdout.WriteString(Version + "\n")
 			os.Exit(1)
 			return
 		default:
