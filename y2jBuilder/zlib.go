@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,7 +11,7 @@ import (
 )
 
 func mustCopyFile(fromPath string, toPath string) {
-	content, err := ioutil.ReadFile(fromPath)
+	content, err := os.ReadFile(fromPath)
 	if err != nil {
 		panic(err)
 	}
@@ -20,7 +19,7 @@ func mustCopyFile(fromPath string, toPath string) {
 	if err != nil {
 		panic(err)
 	}
-	err = ioutil.WriteFile(toPath, content, 0777)
+	err = os.WriteFile(toPath, content, 0777)
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +57,7 @@ func mustZipDir(dir string, targetPath string) {
 		if err != nil {
 			panic(err)
 		}
-		content, err := ioutil.ReadFile(path)
+		content, err := os.ReadFile(path)
 		if err != nil {
 			panic(err)
 		}
@@ -75,7 +74,7 @@ func mustZipDir(dir string, targetPath string) {
 	if err != nil {
 		panic(err)
 	}
-	err = ioutil.WriteFile(targetPath, buf.Bytes(), 0777)
+	err = os.WriteFile(targetPath, buf.Bytes(), 0777)
 	if err != nil {
 		panic(err)
 	}
