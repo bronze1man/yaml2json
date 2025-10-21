@@ -1,4 +1,5 @@
-yaml2json
+/yaml2json
+/y2jBuilder/y2jBuilder
 
 # goland files
 .idea/

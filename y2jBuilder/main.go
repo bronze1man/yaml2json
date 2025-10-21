@@ -5,41 +5,42 @@ import (
 	"path/filepath"
 )
 
-func main(){
-	pwd,err:=os.Getwd()
-	if err!=nil{
+func main() {
+	pwd, err := os.Getwd()
+	if err != nil {
 		panic(err)
 	}
-	mustDeleteFile(filepath.Join(pwd,"tmp","file"))
-	mustDeleteFile(filepath.Join(pwd,"tmp","fileZip"))
-	mustRunCmd([]string{"go","test","-v","github.com/bronze1man/yaml2json/y2jLib"},nil)
-	for _,info:=range buildInfoList {
-		outputPath := filepath.Join(pwd,"bin",info.goos+"_"+info.goarch,"yaml2json")
-		if info.goos=="windows"{
-			outputPath+=".exe"
+	mustDeleteFile(filepath.Join(pwd, "tmp", "file"))
+	mustDeleteFile(filepath.Join(pwd, "tmp", "fileZip"))
+	mustRunCmd([]string{"go", "test", "-v", "github.com/bronze1man/yaml2json/y2jLib"}, nil)
+	for _, info := range buildInfoList {
+		outputPath := filepath.Join(pwd, "bin", info.goos+"_"+info.goarch, "yaml2json")
+		if info.goos == "windows" {
+			outputPath += ".exe"
 		}
-		mustRunCmd([]string{"go","build","-o",outputPath,"-ldflags","-s -w","-gcflags=-trimpath","github.com/bronze1man/yaml2json"},map[string]string{
-			"GOOS":info.goos,
-			"GOARCH":info.goarch,
+		mustRunCmd([]string{"go", "build", "-o", outputPath, "-ldflags", "-s -w", "-gcflags=-trimpath", "github.com/bronze1man/yaml2json"}, map[string]string{
+			"GOOS":   info.goos,
+			"GOARCH": info.goarch,
 		})
-		filePath:="yaml2json_"+info.goos+"_"+info.goarch
-		if info.goos=="windows"{
-			filePath+=".exe"
+		filePath := "yaml2json_" + info.goos + "_" + info.goarch
+		if info.goos == "windows" {
+			filePath += ".exe"
 		}
-		mustCopyFile(outputPath,filepath.Join(pwd,"tmp","file",filePath))
-		filePath2:="yaml2json"
-		if info.goos=="windows"{
-			filePath2+=".exe"
+		mustCopyFile(outputPath, filepath.Join(pwd, "tmp", "file", filePath))
+		filePath2 := "yaml2json"
+		if info.goos == "windows" {
+			filePath2 += ".exe"
 		}
-		mustCopyFile(outputPath,filepath.Join(pwd,"tmp","fileZip",info.goos+"_"+info.goarch,filePath2))
+		mustCopyFile(outputPath, filepath.Join(pwd, "tmp", "fileZip", info.goos+"_"+info.goarch, filePath2))
 	}
-	mustZipDir(filepath.Join(pwd,"tmp","fileZip"),filepath.Join(pwd,"tmp","file","yaml2json_all.zip"))
+	mustZipDir(filepath.Join(pwd, "tmp", "fileZip"), filepath.Join(pwd, "tmp", "file", "yaml2json_all.zip"))
 }
 
-type buildInfo struct{
-	goos string
+type buildInfo struct {
+	goos   string
 	goarch string
 }
+
 // copy from /usr/local/go/src/internal/platform/zosarch.go:10
 var buildInfoList = []buildInfo{
 	{"aix", "ppc64"},
@@ -94,4 +95,3 @@ var buildInfoList = []buildInfo{
 	{"windows", "arm"},
 	{"windows", "arm64"},
 }
-
